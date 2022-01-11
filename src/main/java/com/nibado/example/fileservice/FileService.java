@@ -26,8 +26,6 @@ public class FileService {
         this.repository = repository;
         this.saveDir = saveDir;
         saveDir.mkdirs();
-
-        LOG.info("Used memory: {} MB", getUsedMemory());
     }
 
     public void upload(FileItemIterator iter) throws IOException {
@@ -40,16 +38,13 @@ public class FileService {
         }
     }
 
-    private long getUsedMemory() {
-        return (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024;
-    }
-
     private void upload(FileItemStream item) throws IOException {
         var fileName = item.getName();
         var type = item.getContentType();
         var ins = item.openStream();
         var destination = new File(saveDir, System.currentTimeMillis() + fileName);
         var outs = new FileOutputStream(destination);
+
         IOUtils.copy(ins, outs);
         IOUtils.closeQuietly(ins);
         IOUtils.closeQuietly(outs);
@@ -59,7 +54,6 @@ public class FileService {
         repository.create(file);
 
         LOG.info("Saved {} with type {} to {}", fileName, type, destination);
-        LOG.info("Used memory: {} MB", getUsedMemory());
     }
 
     public List<FileRecord> findAll() {
