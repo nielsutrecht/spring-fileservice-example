@@ -70,6 +70,27 @@ class FileServiceApplicationTests {
 		assertThat(download.getHeaders().getContentDisposition().getFilename()).isEqualTo(file.name);
 	}
 
+	@Test
+	void Unknown_id_should_return_404() {
+		var download = template.getForEntity("/file/ABCDEF", ErrorHandling.Problem.class);
+
+		assertThat(download.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		assertThat(download.getBody().type()).isEqualTo("file_not_found");
+		assertThat(download.getBody().detail()).isEqualTo("File with 'ABCDEF' not found");
+	}
+
+	@Test
+	void Invalid_request_should_return_400() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity<String> entity = new HttpEntity<>("{}", headers);
+		var response = template.exchange("/file/upload", HttpMethod.POST, entity, ErrorHandling.Problem.class, "");
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(response.getBody().type()).isEqualTo("bad_request");
+	}
+
 	private List<File> storedFiles() {
 		return Arrays.asList(Objects.requireNonNull(saveDir.listFiles()));
 	}

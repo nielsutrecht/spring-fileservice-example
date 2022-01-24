@@ -27,7 +27,8 @@ public class FileController {
 
     @GetMapping("/{id}")
     public void download(@PathVariable("id") String id, HttpServletResponse response) throws IOException  {
-        var record = service.findById(id).orElseThrow(() -> new IllegalArgumentException(id + " not found"));
+        var record = service.findById(id)
+                .orElseThrow(() -> new FileNotFoundException("File with '" + id + "' not found"));
 
         response.setContentType(record.contentType().toString());
         response.setHeader("Content-Length", Long.toString(record.size()));
@@ -43,7 +44,7 @@ public class FileController {
     @PostMapping("/upload")
     public ResponseEntity<Void> upload(HttpServletRequest request) throws Exception {
         if(!ServletFileUpload.isMultipartContent(request)) {
-            return ResponseEntity.badRequest().build();
+            throw new BadRequestException("Multipart request expected");
         }
 
         service.upload(new ServletFileUpload().getItemIterator(request));
@@ -52,5 +53,17 @@ public class FileController {
         headers.add("Location", "/");
 
         return ResponseEntity.status(HttpStatus.FOUND).headers(headers).build();
+    }
+
+    public static class FileNotFoundException extends RuntimeException {
+        public FileNotFoundException(String detail) {
+            super(detail);
+        }
+    }
+
+    public static class BadRequestException extends RuntimeException {
+        public BadRequestException(String detail) {
+            super(detail);
+        }
     }
 }

@@ -14,6 +14,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
+import static java.lang.String.format;
 
 @Service
 public class FileService {
@@ -42,7 +45,7 @@ public class FileService {
         var fileName = item.getName();
         var type = item.getContentType();
         var ins = item.openStream();
-        var destination = new File(saveDir, System.currentTimeMillis() + fileName);
+        var destination = new File(saveDir, format("%s-%s", UUID.randomUUID(), fileName));
         var outs = new FileOutputStream(destination);
 
         IOUtils.copy(ins, outs);
