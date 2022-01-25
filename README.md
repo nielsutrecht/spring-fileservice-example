@@ -1,6 +1,6 @@
 # Spring FileService Example
 
-Example Project to demonstrate file upload/download with Spring. It's mainly used as example code for a blog post but can be used and 
+Example Project to demonstrate file upload/download with Spring. It's mainly used as example code for [a blog post](https://niels.nu/blog/2022/spring-file-upload-download) but can be used and 
 adapted into a production ready service.
 
 ## Configuration
